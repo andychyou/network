@@ -53,13 +53,12 @@ unsigned long long error_cnt = 0;
 int main(int argc, char* argv[]){
 
     //debug
-    argc = 6;
-    argv[1] = "codedstream.rx";
-    argv[2] = "datastream.rx";
-    argv[3] = "result.txt";
-    argv[4] = "1011";
-    argv[5] = "4";
-    //
+    // argc = 6;
+    // argv[1] = "codedstream.rx";
+    // argv[2] = "datastream.rx";
+    // argv[3] = "result.txt";
+    // argv[4] = "1011";
+    // argv[5] = "4";
     //
 
     if(argc != 6){
@@ -183,9 +182,8 @@ int main(int argc, char* argv[]){
     
     int codeword_cnt = 0;
     vector<bool> codeword_buffer;
-
-
     vector<bool> div;
+
 
 
     for(int i = 0; i < bits.size(); i++){
@@ -196,8 +194,9 @@ int main(int argc, char* argv[]){
         if(codeword_cnt == codeword_length){
             
             //decode
+            div = codeword_buffer;
             
-            div= codeword_buffer;
+            
             int calc_this_bit;
 
             for(calc_this_bit = 0; calc_this_bit <= codeword_length - generator_length; calc_this_bit++){
@@ -220,12 +219,15 @@ int main(int argc, char* argv[]){
                
             }
             
+          
             for(int i = 0 ; i < div.size(); i++){
                 if(div[i] == 1){
                     error_cnt++;
                     break;
                 }
             }
+
+            
             div.clear();
             codeword_buffer.clear();
             gen.clear();
