@@ -1,0 +1,10 @@
+{
+    "files.associations": {
+        "*.html": "html",
+        "cstddef": "cpp",
+        "iostream": "cpp",
+        "iosfwd": "cpp",
+        "vector": "cpp",
+        "istream": "cpp"
+    }
+}
