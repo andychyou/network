@@ -5,43 +5,14 @@
 
 using namespace std;
 
-typedef union _Byte{
-     unsigned char byte;
-     struct {
-        bool bit8 : 1;
-        bool bit7 : 1;
-        bool bit6 : 1;
-        bool bit5 : 1;
-        bool bit4 : 1;
-        bool bit3 : 1;
-        bool bit2 : 1;
-        bool bit1 : 1;
-    };
-}Byte;
 
-
-
-// byte 뿐만 아니라 bit 단위에서도 little endian이 적용되는 것 같다
-// byte를 bit1-8라고 생각했을 때 msb인 bit1은 byte의 가장 오른쪽에 있다.
-// byte = bit8 bit7 .. bit2 bit1  순서이다
-// 왜 little endian이 bit 단위에도 적용되는지는 모르겠다
 
 void CloseFiles(ifstream &infile, ofstream &outfile){
     infile.close();
     outfile.close();
 }
 
-int CalcMove(Byte generator){
-    if(generator.bit1) return 0;
-    else if(generator.bit2) return 1;
-    else if(generator.bit3) return 2;
-    else if(generator.bit4) return 3;
-    else if(generator.bit5) return 4;
-    else if(generator.bit6) return 5;
-    else if(generator.bit7) return 6;
-    else if(generator.bit8) return 7;
-    else return 0;
-}
+
 
 int dataword_length;
 int codeword_length;
@@ -71,12 +42,13 @@ int main(int argc, char* argv[]){
 
 
     infile.open(argv[1], ios::binary | ios::ate);
-    outfile.open(argv[2], ios::binary | ios::out);
     if(!infile.is_open()){
         cout << "input file open error." << '\n';
         CloseFiles(infile, outfile);
         return 0;
     }
+
+    outfile.open(argv[2], ios::binary | ios::out);
     if(!outfile.is_open()){
         cout << "output file open error." << '\n';
         CloseFiles(infile, outfile);
@@ -182,11 +154,7 @@ int main(int argc, char* argv[]){
             vector<bool> div = codeword1;
             int calc_this_bit;
             for(calc_this_bit = 0; calc_this_bit <= codeword_length - generator_length; calc_this_bit++){
-                if(div[calc_this_bit] == 0){
-                    //div.push_back(0);
-                    int a;
-                }
-                else{
+                if(div[calc_this_bit] == 1){
                     for(int i = 0 ; i < calc_this_bit; i++){
                         div[i] = 0;
                     }
@@ -194,6 +162,7 @@ int main(int argc, char* argv[]){
                         div[i] = (gen[i] ^ div[i]);
                     }
                 }
+               
                 
                 gen.pop_back();
                 gen.insert(gen.begin(), 0);
@@ -215,20 +184,15 @@ int main(int argc, char* argv[]){
             }
             
             for(calc_this_bit = 0; calc_this_bit <= codeword_length - generator_length; calc_this_bit++){
-                if(div[calc_this_bit] == 0){
-                    //div.push_back(0);
-                    int a;
-                }
-                else{
+                if(div[calc_this_bit] == 1){
                     for(int i = 0 ; i < calc_this_bit; i++){
                         div[i] = 0;
                     }
                     for(int i = calc_this_bit ; i < codeword_length; i++){
                         div[i] = (gen[i] ^ div[i]);
                     }
-
-
                 }
+            
                 
                 gen.pop_back();
                 gen.insert(gen.begin(), 0);
@@ -283,11 +247,7 @@ int main(int argc, char* argv[]){
             vector<bool> div = codeword1;
             int calc_this_bit;
             for(calc_this_bit = 0; calc_this_bit <= codeword_length - generator_length; calc_this_bit++){
-                if(div[calc_this_bit] == 0){
-                    //div.push_back(0);
-                    int a;
-                }
-                else{
+                if(div[calc_this_bit] == 1){
                     for(int i = 0 ; i < calc_this_bit; i++){
                         div[i] = 0;
                     }
@@ -295,6 +255,7 @@ int main(int argc, char* argv[]){
                         div[i] = (gen[i] ^ div[i]);
                     }
                 }
+                
                 
                 gen.pop_back();
                 gen.insert(gen.begin(), 0);
@@ -363,7 +324,6 @@ int main(int argc, char* argv[]){
     // }
     //
 
-    
     CloseFiles(infile, outfile);
     return 0;
 }

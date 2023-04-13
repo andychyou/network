@@ -6,43 +6,12 @@
 
 using namespace std;
 
-typedef union _Byte{
-     unsigned char byte;
-     struct {
-        bool bit8 : 1;
-        bool bit7 : 1;
-        bool bit6 : 1;
-        bool bit5 : 1;
-        bool bit4 : 1;
-        bool bit3 : 1;
-        bool bit2 : 1;
-        bool bit1 : 1;
-    };
-}Byte;
 
-
-
-// byte 뿐만 아니라 bit 단위에서도 little endian이 적용되는 것 같다
-// byte를 bit1-8라고 생각했을 때 msb인 bit1은 byte의 가장 오른쪽에 있다.
-// byte = bit8 bit7 .. bit2 bit1  순서이다
-// 왜 little endian이 bit 단위에도 적용되는지는 모르겠다
 
 void CloseFiles(ifstream &infile, ofstream &outfile, ofstream &resultfile){
     infile.close();
     outfile.close();
     resultfile.close();
-}
-
-int CalcMove(Byte generator){
-    if(generator.bit1) return 0;
-    else if(generator.bit2) return 1;
-    else if(generator.bit3) return 2;
-    else if(generator.bit4) return 3;
-    else if(generator.bit5) return 4;
-    else if(generator.bit6) return 5;
-    else if(generator.bit7) return 6;
-    else if(generator.bit8) return 7;
-    else return 0;
 }
 
 int dataword_length;
@@ -71,19 +40,21 @@ int main(int argc, char* argv[]){
     ifstream infile;
     ofstream outfile, resultfile;
 
-    infile.open(argv[1], ios::binary | ios::ate);
-    outfile.open(argv[2], ios::binary | ios::out);
-    resultfile.open(argv[3], ios::out);
+    infile.open(argv[1], ios::binary);
     if(!infile.is_open()){
         cout << "input file open error." << '\n';
         CloseFiles(infile, outfile, resultfile);
         return 0;
     }
+
+    outfile.open(argv[2], ios::binary | ios::out);
     if(!outfile.is_open()){
         cout << "output file open error." << '\n';
         CloseFiles(infile, outfile, resultfile);
         return 0;
     }
+    
+    resultfile.open(argv[3], ios::out);
     if(!resultfile.is_open()){
         cout << "result file open error." << '\n';
         CloseFiles(infile, outfile, resultfile);
@@ -136,10 +107,6 @@ int main(int argc, char* argv[]){
     
     
 
-    unsigned long long read_length_byte = (unsigned long long)infile.tellg();
-    if(read_length_byte > 0) read_length_byte--;
-    infile.clear();
-    infile.seekg(0);
 
     unsigned char c;
     unsigned char padding_size_bits = 0;
@@ -185,14 +152,14 @@ int main(int argc, char* argv[]){
     vector<bool> div;
 
 
-
+    int sss = 0;
     for(int i = 0; i < bits.size(); i++){
         if(codeword_cnt < codeword_length){
             codeword_buffer.push_back(bits[i]);
             codeword_cnt++;
         }
         if(codeword_cnt == codeword_length){
-            
+            sss++;
             //decode
             div = codeword_buffer;
             
@@ -201,18 +168,15 @@ int main(int argc, char* argv[]){
 
             for(calc_this_bit = 0; calc_this_bit <= codeword_length - generator_length; calc_this_bit++){
                 
-                if(div[calc_this_bit] == 0){
-                    int a;
-                }
-                else{
-                    
-                    for(int i = 0 ; i < calc_this_bit; i++){
+                if(div[calc_this_bit] == 1){
+                     for(int i = 0 ; i < calc_this_bit; i++){
                         div[i] = 0;
                     }
                     for(int i = calc_this_bit ; i < codeword_length; i++){
                         div[i] = (gen[i] ^ div[i]);
                     }
                 }
+                
                 gen.pop_back();
                 gen.insert(gen.begin(), 0);
                
@@ -272,7 +236,7 @@ int main(int argc, char* argv[]){
     
     
 
-    resultfile << read_length_byte << ' ' << error_cnt;
+    resultfile << sss << ' ' << error_cnt;
 
 
     

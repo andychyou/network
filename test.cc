@@ -13,7 +13,9 @@ int main(){
     for(int i = 0; i < arr2.size();i++){
         cout << arr2[i];
     }
+    vector<int>().swap(arr2);
     cout << endl;
-
+    cout << "arr1 cap : " << arr1.capacity() << endl;
+    cout << "arr2 cap : " << arr2.capacity() << endl;
     return 0;
 }
